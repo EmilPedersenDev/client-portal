@@ -18,7 +18,11 @@ const login = async (ssn) => {
 
   const { data } = await api.post("/auth", reqBody);
 
-  const collectUser = await api.post("/collect", { orderRef: data });
+  const collectUser = await api.post(
+    "/collect",
+    { orderRef: data },
+    { withCredentials: true }
+  );
 
   if (collectUser.status === 200) {
     return collectUser.data;

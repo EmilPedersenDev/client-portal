@@ -1,13 +1,7 @@
-const https = require("https");
 const axios = require("axios");
+const bankIdSettings = require("../services/bankIdSettings");
 
 const authService = require("../services/auth");
-
-const certSettings = new https.Agent({
-  pfx: require("fs").readFileSync("./FPTestcert3_20200618.p12"),
-  passphrase: "qwerty123",
-  ca: require("fs").readFileSync("./BankID.cer"),
-});
 
 module.exports = (app) => {
   app.post("/auth", async (req, res) => {
@@ -24,7 +18,7 @@ module.exports = (app) => {
           headers: {
             "Content-Type": "application/json",
           },
-          httpsAgent: certSettings,
+          httpsAgent: bankIdSettings,
         }
       );
       let orderRef;
@@ -40,11 +34,16 @@ module.exports = (app) => {
 
   app.post("/collect", async (req, res) => {
     try {
-      const data = await authService.callCollect(
-        req.body.orderRef,
-        certSettings
-      );
-      res.json(data);
+      const token = await authService.callCollect(req.body.orderRef);
+
+      return res
+        .cookie("access_token", token, {
+          secure: process.env.NODE_ENV === "production",
+        })
+        .status(200)
+        .json({
+          message: "Logged in successfully",
+        });
     } catch (err) {
       res.status(500).json(err.message);
     }

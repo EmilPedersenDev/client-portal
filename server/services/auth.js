@@ -1,4 +1,9 @@
 const axios = require("axios");
+const db = require("../models/index");
+const User = db.user;
+const bankIdSettings = require("../services/bankIdSettings");
+const { checkIfUserExists, createUser } = require("../controllers/user");
+const { signJwt } = require("../services/jwt");
 
 const timeOut = (ms) => {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -9,7 +14,28 @@ const sleep = async (fn, orderRef) => {
   return await fn(orderRef);
 };
 
-const callCollect = async (orderRef, certSettings) => {
+const signInUser = async (bankIdData) => {
+  try {
+    const user = await User.findOne({
+      personalNumber: bankIdData.completionData.user.personalNumber,
+    });
+
+    let token;
+
+    if (!user) {
+      const newUser = await createUser(bankIdData);
+      token = signJwt(newUser);
+    } else {
+      token = signJwt(user);
+    }
+
+    return token;
+  } catch (err) {
+    throw err;
+  }
+};
+
+const callCollect = async (orderRef) => {
   try {
     const bankIdReqBody = {
       orderRef: orderRef,
@@ -22,7 +48,7 @@ const callCollect = async (orderRef, certSettings) => {
         headers: {
           "Content-Type": "application/json",
         },
-        httpsAgent: certSettings,
+        httpsAgent: bankIdSettings,
       }
     );
 
@@ -42,7 +68,8 @@ const callCollect = async (orderRef, certSettings) => {
         throw new Error(data.hintCode);
       }
     } else {
-      return data;
+      const token = await signInUser(data);
+      return token;
     }
   } catch (err) {
     throw err;
@@ -51,4 +78,5 @@ const callCollect = async (orderRef, certSettings) => {
 
 module.exports = {
   callCollect,
+  signInUser,
 };

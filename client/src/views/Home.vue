@@ -1,24 +1,17 @@
 <template>
-  <div class="home">
-    <register />
-  </div>
+  <div class="home"></div>
 </template>
 
 <script>
 // @ is an alias to /src
-import Register from "../components/Register.vue";
+import Login from "../components/Login.vue";
 export default {
   name: "Home",
   components: {
-    Register,
+    Login,
   },
 };
 </script>
 
 <style lang="scss"  scoped>
-.home {
-  width: 100%;
-  height: 100%;
-  min-height: 100vh;
-}
 </style>

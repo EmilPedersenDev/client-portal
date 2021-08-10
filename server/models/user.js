@@ -4,6 +4,9 @@ module.exports = (mongoose) => {
       name: {
         type: String,
       },
+      personalNumber: {
+        type: Number,
+      },
       email: {
         type: String,
       },
