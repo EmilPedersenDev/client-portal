@@ -1,5 +1,7 @@
 import axios from "axios";
 import api from "./api/index";
+import store from "../store/index";
+import Cookies from "js-cookie";
 
 const login = async (ssn) => {
   if (!ssn) return;
@@ -31,6 +33,13 @@ const login = async (ssn) => {
   }
 };
 
+const logout = async () => {
+  await api.get("/logout");
+  Cookies.remove("access_token");
+  store.commit("setToken", "");
+};
+
 export default {
   login,
+  logout,
 };

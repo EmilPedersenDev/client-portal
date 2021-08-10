@@ -1,6 +1,13 @@
 <template>
   <div class="login">
     <div class="login__card">
+      <div class="login__bank-id-logo-wrapper">
+        <img
+          class="login__bank-id-logo"
+          src="https://www.bankid.com/assets/logo-bank-id.svg"
+          alt=""
+        />
+      </div>
       <form @submit.prevent="submit">
         <div class="form-group justify-content-center">
           <label for="exampleInputEmail1">Social Number</label>
@@ -14,12 +21,10 @@
           />
         </div>
         <div class="submit-cta">
-          <button class="btn btn-dark">Logga in med Bank Id</button>
+          <button class="btn btn-outline-primary">Logga in med Bank Id</button>
         </div>
       </form>
-      <router-link class="login-link" to="/login"
-        >Har redan ett konto?</router-link
-      >
+
       <div class="spinner-wrapper" v-if="isLoading">
         <div class="spinner"></div>
       </div>
@@ -29,6 +34,8 @@
 
 <script>
 import bankId from "../service/bankId";
+import Cookies from "js-cookie";
+import { mapActions } from "vuex";
 export default {
   name: "login",
   data() {
@@ -39,13 +46,15 @@ export default {
   },
 
   methods: {
+    ...mapActions(["getUser"]),
     async submit() {
       this.isLoading = true;
       try {
-        const login = await bankId.login(this.ssn);
+        await bankId.login(this.ssn);
         this.isLoading = false;
-        this.$store.commit("setToken");
-        this.$router.push("/about");
+        this.$store.commit("setToken", Cookies.get("access_token"));
+        await this.getUser();
+        this.$router.push("/");
       } catch (err) {
         this.isLoading = false;
         console.log(err.message);
@@ -60,7 +69,7 @@ export default {
 .login {
   width: 100%;
   height: 100%;
-  min-height: 100vh;
+  min-height: calc(100vh - 78px);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -74,6 +83,16 @@ export default {
     padding: 50px;
     box-shadow: 0px 3px 15px 1px rgba($color: #000000, $alpha: 0.2);
     border-radius: 5px;
+    .login__bank-id-logo-wrapper {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      margin-bottom: 30px;
+      .login__bank-id-logo {
+        width: 60px;
+        height: 100%;
+      }
+    }
     .login-link {
       position: absolute;
       bottom: 5px;
@@ -85,7 +104,7 @@ export default {
   .submit-cta {
     display: flex;
     justify-content: center;
-    margin-top: 30px;
+    margin-top: 50px;
   }
 }
 </style>

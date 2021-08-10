@@ -48,4 +48,10 @@ module.exports = (app) => {
       res.status(500).json(err.message);
     }
   });
+
+  app.get("/logout", (req, res) => {
+    return res.clearCookie("access_token").status(200).json({
+      message: "Logged out",
+    });
+  });
 };

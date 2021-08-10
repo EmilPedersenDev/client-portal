@@ -32,6 +32,7 @@ app.get("/", (req, res) => {
 });
 
 require("./routes/auth")(app);
+require("./routes/user")(app);
 
 app.listen(3000, () => {
   console.log("Listen att 3000");
