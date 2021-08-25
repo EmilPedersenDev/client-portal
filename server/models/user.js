@@ -13,6 +13,9 @@ module.exports = (mongoose) => {
       companies: {
         type: [String],
       },
+      role: {
+        type: String,
+      },
     },
     { timestamps: true }
   );

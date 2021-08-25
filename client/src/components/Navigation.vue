@@ -8,6 +8,9 @@
       <li v-if="isAuthenticated">
         <router-link to="/about">About</router-link>
       </li>
+      <li v-if="isAuthenticated && isAdmin">
+        <router-link to="/admin">Admin</router-link>
+      </li>
       <li>
         <button
           class="btn btn-outline-primary"
@@ -37,7 +40,7 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(["isAuthenticated"]),
+    ...mapGetters(["isAuthenticated", "isAdmin"]),
   },
 };
 </script>

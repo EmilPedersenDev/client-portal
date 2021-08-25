@@ -35,7 +35,7 @@
 <script>
 import bankId from "../service/bankId";
 import Cookies from "js-cookie";
-import { mapActions } from "vuex";
+import { mapActions, mapState } from "vuex";
 export default {
   name: "login",
   data() {
@@ -54,14 +54,19 @@ export default {
         this.isLoading = false;
         this.$store.commit("setToken", Cookies.get("access_token"));
         await this.getUser();
-        this.$router.push("/");
+
+        this.user.role === "Admin"
+          ? this.$router.push("/admin")
+          : this.$router.push("/");
       } catch (err) {
         this.isLoading = false;
         console.log(err.message);
       }
     },
   },
-  computed: {},
+  computed: {
+    ...mapState(["user"]),
+  },
 };
 </script>
 

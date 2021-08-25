@@ -27,6 +27,14 @@ export default new Vuex.Store({
         throw err;
       }
     },
+    addCompany: async ({ commit }, company) => {
+      try {
+        const { data } = await api.post("/user/company", company);
+        return data;
+      } catch (err) {
+        console.error(err);
+      }
+    },
   },
   mutations: {
     setToken: (state, payload) => {
@@ -42,6 +50,9 @@ export default new Vuex.Store({
     },
     getUser: (state) => {
       return state.user;
+    },
+    isAdmin: (state) => {
+      return state.user && state.user.role === "Admin";
     },
   },
 });
